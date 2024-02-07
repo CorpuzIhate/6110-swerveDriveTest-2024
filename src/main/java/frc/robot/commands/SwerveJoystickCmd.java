@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -55,7 +56,7 @@ public class SwerveJoystickCmd extends Command {
     yspeed = Math.abs(yspeed) > OIConstants.kDeadband ? yspeed : 0.0;
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
-    // allows for vioelent joystick movements to be more smooth
+    // allows for violent joystick movements to be more smooth
 
     xspeed = xLimiter.calculate(xspeed) *  DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
     yspeed = yLimiter.calculate(yspeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond; 
@@ -63,6 +64,7 @@ public class SwerveJoystickCmd extends Command {
      DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
 
     //select orintatin of robot
+
     ChassisSpeeds chassisSpeeds;
     if(fieldOrientedFunction.get()){
       chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -73,10 +75,21 @@ public class SwerveJoystickCmd extends Command {
       chassisSpeeds = new ChassisSpeeds(xspeed,yspeed, turningSpeed);
     }
 
+
+
+
     // convert chassis speeds to individual module states; later to switch to velocity
     SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
     // set state to each wheel
     swerveSubsystem.setModuleStates(moduleStates);
+    SmartDashboard.putNumber("x speed", xspeed);
+    SmartDashboard.putNumber("y speed", yspeed);
+    SmartDashboard.putNumber("turning speed", turningSpeed);
+
+    SmartDashboard.putBoolean("Field Relative Orientation?", fieldOrientedFunction.get());
+
+
+
   }
 
   // Called once the command ends or is interrupted.
